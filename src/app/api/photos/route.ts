@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const categoryId = searchParams.get("categoryId");
+  const q = searchParams.get("q");
 
   const photos = await prisma.photo.findMany({
     where: categoryId ? { categoryId } : undefined,
@@ -12,7 +13,29 @@ export async function GET(request: NextRequest) {
     orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
   });
 
-  return NextResponse.json(photos);
+  // Filter by search query (title, description, tags)
+  let result = photos;
+  if (q && q.trim()) {
+    const searchLower = q.trim().toLowerCase();
+    result = photos.filter((photo) => {
+      // Match title
+      if (photo.title.toLowerCase().includes(searchLower)) return true;
+      // Match description
+      if (photo.description?.toLowerCase().includes(searchLower)) return true;
+      // Match tags (stored as JSON string)
+      if (photo.tags) {
+        try {
+          const tags: string[] = JSON.parse(photo.tags);
+          if (tags.some((tag) => tag.toLowerCase().includes(searchLower))) return true;
+        } catch {
+          // ignore parse errors
+        }
+      }
+      return false;
+    });
+  }
+
+  return NextResponse.json(result);
 }
 
 export async function POST(request: NextRequest) {
