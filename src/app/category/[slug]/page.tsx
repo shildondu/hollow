@@ -1,22 +1,48 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Header } from "@/components/header";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const photos = await prisma.photo.findMany({
-    where: { isPublic: true },
-    include: { category: true },
-    orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const category = await prisma.category.findUnique({
+    where: { slug },
+    include: {
+      photos: {
+        where: { isPublic: true },
+        orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
+      },
+    },
   });
+
+  if (!category) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen">
       <Header />
       <main className="container py-12">
+        <div className="mb-10">
+          <Link
+            href="/categories"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Collections
+          </Link>
+          <h1 className="text-4xl font-medium mt-4">{category.name}</h1>
+          <p className="text-muted-foreground mt-2">
+            {category.photos.length} {category.photos.length === 1 ? 'photo' : 'photos'}
+          </p>
+        </div>
         <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4">
-          {photos.map((photo) => (
+          {category.photos.map((photo) => (
             <Link
               key={photo.id}
               href={`/photo/${photo.id}`}
@@ -31,20 +57,15 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-xl">
                   <div className="absolute bottom-0 left-0 right-0 p-5">
                     <h2 className="font-medium text-white text-lg">{photo.title}</h2>
-                    {photo.category && (
-                      <span className="text-sm text-white/60 mt-1 block">
-                        {photo.category.name}
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
             </Link>
           ))}
         </div>
-        {photos.length === 0 && (
+        {category.photos.length === 0 && (
           <div className="text-center py-32 text-muted-foreground">
-            <p className="text-lg">No photos yet</p>
+            <p className="text-lg">No photos in this collection</p>
           </div>
         )}
       </main>
