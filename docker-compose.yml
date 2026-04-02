@@ -1,0 +1,15 @@
+services:
+  hollow:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/app/data/prod.db
+      - AUTH_SECRET=change-this-to-random-string
+      - NEXTAUTH_URL=http://localhost:3000
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=change-this-password
+    volumes:
+      - ./data:/app/data
+      - ./public/uploads:/app/public/uploads
+    restart: unless-stopped
