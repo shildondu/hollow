@@ -21,7 +21,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   let result = photos;
   if (q && q.trim()) {
     const searchLower = q.trim().toLowerCase();
-    result = photos.filter((photo) => {
+    result = photos.filter((photo: typeof photos[number]) => {
       if (photo.title.toLowerCase().includes(searchLower)) return true;
       if (photo.description?.toLowerCase().includes(searchLower)) return true;
       if (photo.tags) {

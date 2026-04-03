@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   let result = photos;
   if (q && q.trim()) {
     const searchLower = q.trim().toLowerCase();
-    result = photos.filter((photo) => {
+    result = photos.filter((photo: typeof photos[number]) => {
       // Match title
       if (photo.title.toLowerCase().includes(searchLower)) return true;
       // Match description
