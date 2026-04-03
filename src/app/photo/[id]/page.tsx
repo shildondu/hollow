@@ -111,7 +111,7 @@ export default async function PhotoPage({
             <div className="space-y-3">
               <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Technical Details</h2>
               <div className="grid grid-cols-2 gap-3 text-sm">
-                {exifInfo.map((item, index) => (
+                {exifInfo.map((item: typeof exifInfo[number], index: number) => (
                   <div key={index}>
                     <span className="text-muted-foreground text-xs block mb-1">
                       {item.label}

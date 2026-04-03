@@ -42,7 +42,7 @@ export default async function CategoryPage({
           </p>
         </div>
         <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4">
-          {category.photos.map((photo) => (
+          {category.photos.map((photo: typeof category.photos[number]) => (
             <Link
               key={photo.id}
               href={`/photo/${photo.id}`}

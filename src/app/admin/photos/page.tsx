@@ -227,7 +227,7 @@ export default function PhotosPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {photos.map((photo) => (
+        {photos.map((photo: Photo) => (
           <div
             key={photo.id}
             className="group relative overflow-hidden rounded-lg border"
@@ -374,7 +374,7 @@ export default function PhotosPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {categories.map((cat) => (
+                    {categories.map((cat: Category) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         {cat.name}
                       </SelectItem>

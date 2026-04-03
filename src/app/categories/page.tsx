@@ -20,7 +20,7 @@ export default async function CategoriesPage() {
       <main className="container py-12">
         <h1 className="text-3xl font-medium mb-10">Collections</h1>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category) => (
+          {categories.map((category: typeof categories[number]) => (
             <Link
               key={category.id}
               href={`/category/${category.slug}`}

@@ -16,7 +16,9 @@ const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/categories", label: "Collections", icon: FolderOpen },
   { href: "/admin/photos", label: "Photos", icon: Images },
-];
+] as const;
+
+type NavItem = typeof navItems[number];
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -32,7 +34,7 @@ export function AdminSidebar() {
         </div>
 
         <nav className="flex-1 space-y-1 p-4">
-          {navItems.map((item) => {
+          {navItems.map((item: NavItem) => {
             const isActive =
               item.href === "/admin"
                 ? pathname === "/admin"
