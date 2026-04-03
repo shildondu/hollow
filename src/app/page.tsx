@@ -46,7 +46,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </p>
         )}
         <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4">
-          {result.map((photo) => (
+          {result.map((photo: typeof photos[number]) => (
             <Link
               key={photo.id}
               href={`/photo/${photo.id}`}
