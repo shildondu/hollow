@@ -4,6 +4,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ```bash
 npm install
+npx prisma migrate deploy
 npx prisma generate
 npm run build
 pm2 start npm --name "hollow" -- start
