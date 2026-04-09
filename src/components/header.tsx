@@ -11,10 +11,18 @@ export function Header() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
+  const [slogan, setSlogan] = useState("人活着不是为了一辈子，而是为了几个瞬间");
 
   useEffect(() => {
     setSearchValue(searchParams.get("q") || "");
   }, [searchParams]);
+
+  useEffect(() => {
+    fetch("/api/slogans")
+      .then((res) => res.json())
+      .then((data) => setSlogan(data.text))
+      .catch(() => {});
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,7 +45,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-4 shrink-0">
           <span className="text-xl font-medium tracking-tight">Hollow</span>
-          <span className="hidden lg:inline text-sm text-muted-foreground">人活着不是为了一辈子，而是为了几个瞬间</span>
+          <span className="hidden lg:inline text-sm text-muted-foreground">{slogan}</span>
         </Link>
 
         <form onSubmit={handleSubmit} className="relative w-full max-w-xs">

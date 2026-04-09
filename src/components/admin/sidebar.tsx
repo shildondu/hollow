@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   FolderOpen,
   Images,
+  Quote,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -16,6 +17,7 @@ const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/categories", label: "Collections", icon: FolderOpen },
   { href: "/admin/photos", label: "Photos", icon: Images },
+  { href: "/admin/slogans", label: "Slogans", icon: Quote },
 ] as const;
 
 type NavItem = typeof navItems[number];
