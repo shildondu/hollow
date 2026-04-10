@@ -1,6 +1,7 @@
 import { writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
+import crypto from "crypto";
 import sharp from "sharp";
 
 const ALLOWED_TYPES = [
@@ -18,12 +19,20 @@ const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
 const THUMBNAIL_WIDTH = 800;
 const THUMBNAIL_QUALITY = 80;
 
+// Calculate SHA256 hash from file
+export async function calculateFileHash(file: File): Promise<string> {
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  return crypto.createHash("sha256").update(buffer).digest("hex");
+}
+
 interface UploadResult {
   url: string;
   thumbnailUrl: string;
+  fileHash: string;
 }
 
-export async function saveFile(file: File): Promise<UploadResult> {
+export async function saveFile(file: File, skipHashCalculation = false): Promise<UploadResult> {
   // Validate file type
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error(`File type ${file.type} is not allowed`);
@@ -42,6 +51,9 @@ export async function saveFile(file: File): Promise<UploadResult> {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+
+  // Calculate file hash for deduplication
+  const fileHash = crypto.createHash("sha256").update(buffer).digest("hex");
 
   const timestamp = Date.now();
   const randomStr = Math.random().toString(36).slice(2);
@@ -78,5 +90,6 @@ export async function saveFile(file: File): Promise<UploadResult> {
   return {
     url: `/uploads/${filename}`,
     thumbnailUrl: `/uploads/${thumbFilename}`,
+    fileHash,
   };
 }

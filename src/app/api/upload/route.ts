@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { saveFile } from "@/lib/upload";
+import { saveFile, calculateFileHash } from "@/lib/upload";
+import { prisma } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +15,20 @@ export async function POST(request: Request) {
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    // Check for duplicate file
+    const fileHash = await calculateFileHash(file);
+    const existingPhoto = await prisma.photo.findUnique({
+      where: { fileHash },
+      select: { id: true, title: true },
+    });
+
+    if (existingPhoto) {
+      return NextResponse.json(
+        { error: `Photo already exists: "${existingPhoto.title}"`, duplicate: true },
+        { status: 409 }
+      );
     }
 
     const result = await saveFile(file);

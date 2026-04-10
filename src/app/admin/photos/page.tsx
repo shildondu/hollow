@@ -33,6 +33,7 @@ interface Photo {
   description: string | null;
   imageUrl: string;
   thumbnailUrl: string | null;
+  fileHash: string | null;
   camera: string | null;
   lens: string | null;
   aperture: string | null;
@@ -61,6 +62,7 @@ export default function PhotosPage() {
     description: "",
     imageUrl: "",
     thumbnailUrl: "",
+    fileHash: "",
     camera: "",
     lens: "",
     aperture: "",
@@ -93,6 +95,7 @@ export default function PhotosPage() {
       description: "",
       imageUrl: "",
       thumbnailUrl: "",
+      fileHash: "",
       camera: "",
       lens: "",
       aperture: "",
@@ -115,6 +118,7 @@ export default function PhotosPage() {
       description: photo.description || "",
       imageUrl: photo.imageUrl,
       thumbnailUrl: photo.thumbnailUrl || "",
+      fileHash: photo.fileHash || "",
       camera: photo.camera || "",
       lens: photo.lens || "",
       aperture: photo.aperture || "",
@@ -150,12 +154,22 @@ export default function PhotosPage() {
         method: "POST",
         body: formData,
       });
-      const { url, thumbnailUrl } = await res.json();
+
+      if (res.status === 409) {
+        const data = await res.json();
+        alert(data.error);
+        setPreviewUrl(null);
+        setUploading(false);
+        return;
+      }
+
+      const { url, thumbnailUrl, fileHash } = await res.json();
 
       setFormData((prev) => ({
         ...prev,
         imageUrl: url,
         thumbnailUrl: thumbnailUrl,
+        fileHash: fileHash,
         title: prev.title || file.name.replace(/\.[^/.]+$/, ""),
       }));
     } catch (error) {

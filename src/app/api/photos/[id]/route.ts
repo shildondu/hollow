@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { unlink } from "fs/promises";
+import path from "path";
 
 export async function GET(
   request: NextRequest,
@@ -78,9 +80,31 @@ export async function DELETE(
 
   const { id } = await params;
 
+  // Get photo before deletion to access file paths
+  const photo = await prisma.photo.findUnique({
+    where: { id },
+    select: { imageUrl: true, thumbnailUrl: true },
+  });
+
+  // Delete database record
   await prisma.photo.delete({
     where: { id },
   });
+
+  // Delete physical files
+  if (photo) {
+    const filesToDelete = [photo.imageUrl, photo.thumbnailUrl].filter(Boolean);
+    for (const fileUrl of filesToDelete) {
+      if (fileUrl && fileUrl.startsWith("/uploads/")) {
+        const filepath = path.join(process.cwd(), "public", fileUrl);
+        try {
+          await unlink(filepath);
+        } catch {
+          // File may not exist, ignore
+        }
+      }
+    }
+  }
 
   return NextResponse.json({ success: true });
 }

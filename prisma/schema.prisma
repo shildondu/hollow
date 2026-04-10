@@ -35,6 +35,7 @@ model Photo {
   description String?
   imageUrl    String
   thumbnailUrl String?
+  fileHash    String?  @unique  // SHA256 hash for deduplication
   camera      String?
   lens        String?
   aperture    String?

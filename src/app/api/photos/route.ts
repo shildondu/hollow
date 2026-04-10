@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
       description: data.description?.trim() || null,
       imageUrl: data.imageUrl,
       thumbnailUrl: data.thumbnailUrl || null,
+      fileHash: data.fileHash || null,
       camera: String(data.camera || "").slice(0, 100) || null,
       lens: String(data.lens || "").slice(0, 100) || null,
       aperture: String(data.aperture || "").slice(0, 20) || null,
