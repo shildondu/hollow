@@ -1,6 +1,7 @@
 import { writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
+import sharp from "sharp";
 
 const ALLOWED_TYPES = [
   "image/jpeg",
@@ -14,7 +15,15 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
 
-export async function saveFile(file: File): Promise<string> {
+const THUMBNAIL_WIDTH = 800;
+const THUMBNAIL_QUALITY = 80;
+
+interface UploadResult {
+  url: string;
+  thumbnailUrl: string;
+}
+
+export async function saveFile(file: File): Promise<UploadResult> {
   // Validate file type
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error(`File type ${file.type} is not allowed`);
@@ -37,6 +46,7 @@ export async function saveFile(file: File): Promise<string> {
   const timestamp = Date.now();
   const randomStr = Math.random().toString(36).slice(2);
   const filename = `${timestamp}-${randomStr}.${ext}`;
+  const thumbFilename = `${timestamp}-${randomStr}-thumb.${ext}`;
 
   const uploadDir = path.join(process.cwd(), "public", "uploads");
   if (!existsSync(uploadDir)) {
@@ -44,7 +54,29 @@ export async function saveFile(file: File): Promise<string> {
   }
 
   const filepath = path.join(uploadDir, filename);
+  const thumbFilepath = path.join(uploadDir, thumbFilename);
+
+  // Save original file
   await writeFile(filepath, buffer);
 
-  return `/uploads/${filename}`;
+  // Generate thumbnail (skip for SVG - vector graphics don't need resizing)
+  if (ext !== "svg") {
+    await sharp(buffer)
+      .resize(THUMBNAIL_WIDTH, undefined, {
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .jpeg({ quality: THUMBNAIL_QUALITY })
+      .png({ quality: THUMBNAIL_QUALITY })
+      .webp({ quality: THUMBNAIL_QUALITY })
+      .toFile(thumbFilepath);
+  } else {
+    // For SVG, just copy the file as thumbnail
+    await writeFile(thumbFilepath, buffer);
+  }
+
+  return {
+    url: `/uploads/${filename}`,
+    thumbnailUrl: `/uploads/${thumbFilename}`,
+  };
 }

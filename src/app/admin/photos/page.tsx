@@ -150,12 +150,12 @@ export default function PhotosPage() {
         method: "POST",
         body: formData,
       });
-      const { url } = await res.json();
+      const { url, thumbnailUrl } = await res.json();
 
       setFormData((prev) => ({
         ...prev,
         imageUrl: url,
-        thumbnailUrl: url,
+        thumbnailUrl: thumbnailUrl,
         title: prev.title || file.name.replace(/\.[^/.]+$/, ""),
       }));
     } catch (error) {

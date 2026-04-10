@@ -16,9 +16,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const url = await saveFile(file);
+    const result = await saveFile(file);
 
-    return NextResponse.json({ url });
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Upload error:", error);
 
