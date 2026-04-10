@@ -68,12 +68,19 @@ export async function saveFile(file: File, skipHashCalculation = false): Promise
   const filepath = path.join(uploadDir, filename);
   const thumbFilepath = path.join(uploadDir, thumbFilename);
 
-  // Save original file
-  await writeFile(filepath, buffer);
+  // Save original file (fix orientation for non-SVG images)
+  if (ext !== "svg") {
+    // Rotate based on EXIF orientation and strip EXIF data
+    const processedBuffer = await sharp(buffer).rotate().toBuffer();
+    await writeFile(filepath, processedBuffer);
+  } else {
+    await writeFile(filepath, buffer);
+  }
 
   // Generate thumbnail (skip for SVG - vector graphics don't need resizing)
   if (ext !== "svg") {
     await sharp(buffer)
+      .rotate()
       .resize(THUMBNAIL_WIDTH, undefined, {
         fit: "inside",
         withoutEnlargement: true,
