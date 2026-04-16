@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Upload, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, X, Loader2 } from "lucide-react";
 import { parseExif, ExifData } from "@/lib/exif";
 
 interface Category {
@@ -307,6 +307,13 @@ export default function PhotosPage() {
                     alt="Preview"
                     className="h-48 w-full rounded-lg object-cover"
                   />
+                  {uploading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/50">
+                      <Loader2 className="h-8 w-8 animate-spin text-white" />
+                      <span className="mt-2 text-sm text-white">Uploading...</span>
+                    </div>
+                  )}
+                  {!uploading && (
                   <Button
                     type="button"
                     variant="destructive"
@@ -321,8 +328,9 @@ export default function PhotosPage() {
                       }));
                     }}
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <Button
