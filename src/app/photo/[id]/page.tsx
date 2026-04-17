@@ -51,7 +51,7 @@ export default async function PhotoPage({
   const exifInfo = [
     photo.camera && { label: "Camera", value: photo.camera },
     photo.lens && { label: "Lens", value: photo.lens },
-    photo.aperture && { label: "Aperture", value: `f/${photo.aperture}` },
+    photo.aperture && { label: "Aperture", value: photo.aperture },
     photo.shutter && { label: "Shutter", value: photo.shutter },
     photo.iso && { label: "ISO", value: photo.iso },
   ].filter(Boolean) as { label: string; value: string }[];

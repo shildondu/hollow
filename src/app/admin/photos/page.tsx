@@ -364,7 +364,7 @@ export default function PhotosPage() {
                 <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                   {exifData.camera && <span>Camera: {exifData.camera}</span>}
                   {exifData.lens && <span>Lens: {exifData.lens}</span>}
-                  {exifData.aperture && <span>f/{exifData.aperture}</span>}
+                  {exifData.aperture && <span>{exifData.aperture}</span>}
                   {exifData.shutter && <span>{exifData.shutter}s</span>}
                   {exifData.iso && <span>ISO {exifData.iso}</span>}
                 </div>
